@@ -5,14 +5,14 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
-  // OneToMany,
+  OneToMany,
   Column,
 } from 'typeorm';
 
 import Customer from '@modules/customers/infra/typeorm/entities/Customer';
 import OrdersProducts from '@modules/orders/infra/typeorm/entities/OrdersProducts';
 
-@Entity('order')
+@Entity('orders')
 class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -20,10 +20,14 @@ class Order {
   @Column()
   customer_id: string;
 
-  @ManyToOne(() => Customer)
+  @ManyToOne(() => Customer, { eager: true })
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
+  @OneToMany(() => OrdersProducts, order_products => order_products.order, {
+    eager: true,
+    cascade: ['insert'],
+  })
   order_products: OrdersProducts[];
 
   @CreateDateColumn()
